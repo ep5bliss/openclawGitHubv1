@@ -1,16 +1,15 @@
 require('dotenv').config();
 
 const express = require('express');
-const callRouter = require('./src/handlers/call');
+const vapiRouter = require('./src/handlers/vapi');
 
 const app = express();
 
-// Twilio sends form-encoded POST bodies
-app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-// Call handling routes
-app.use('/call', callRouter);
+// Vapi webhook routes
+app.use('/vapi', vapiRouter);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -21,5 +20,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   const name = process.env.BUSINESS_NAME || 'Your Business';
   console.log(`AI Receptionist for "${name}" running on port ${PORT}`);
-  console.log(`Webhook URL: https://<your-domain>/call/incoming`);
+  console.log(`Vapi webhook URL: ${process.env.SERVER_URL || 'https://<your-domain>'}/vapi/webhook`);
 });

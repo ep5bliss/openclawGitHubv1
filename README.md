@@ -1,43 +1,44 @@
 # AI Phone Receptionist
 
-An AI-powered receptionist that answers your phone calls, screens out spam, captures leads, and books appointments — all without you picking up.
+An AI receptionist for your phone line — powered by **Vapi** (voice infrastructure) and **OpenAI GPT-4o** (the brain). It answers calls, screens out spam, captures leads, and books appointments.
+
+## Why Vapi instead of Twilio
+
+Vapi is purpose-built for AI voice agents. It handles speech recognition, text-to-speech, and conversation management out of the box. No more carrier blocks, no complex TwiML, and native OpenAI integration — you just write the business logic.
 
 ## What it does
 
-| Caller type | What happens |
-|-------------|-------------|
-| **Real prospect / client** | AI chats, captures name + purpose + contact info, saves the lead |
-| **Appointment seeker** | AI collects details, books a slot on your Google Calendar |
-| **Spammer / solicitor** | AI politely ends the call immediately |
-| **Wrong number / irrelevant** | AI ends the call |
+| Caller type | Result |
+|-------------|--------|
+| Genuine prospect / client | AI chats, captures name + need + contact info → saved to `data/leads.json` |
+| Appointment seeker | AI collects details → creates a Google Calendar event |
+| Spam / solicitor | AI politely ends the call immediately |
+| Wrong number / irrelevant | AI ends the call |
 
 ## How it works
 
 ```
-Incoming call
-     │
-     ▼
-  Twilio (phone number)
-     │  webhook POST
-     ▼
-  This server  ──────►  Claude AI (decides what to say + do)
-     │                        │
-     │           ┌────────────┴────────────┐
-     │           │                         │
-     ▼           ▼                         ▼
-  TwiML      Google Calendar          data/leads.json
-  (speech)   (book event)          data/appointments.json
+Your phone number (via Vapi)
+        │
+        ▼
+  Vapi platform  ──►  OpenAI GPT-4o (conversation + decisions)
+        │                    │ calls tools
+        │          ┌─────────┴──────────────┐
+        │          │                        │
+        ▼          ▼                        ▼
+  Your server  Google Calendar       data/leads.json
+  (tool calls)  (book event)     data/appointments.json
 ```
 
 ---
 
-## Quick Start
+## Setup
 
 ### 1. Prerequisites
 
 - Node.js 18+
-- A [Twilio account](https://www.twilio.com) with a phone number
-- An [Anthropic API key](https://console.anthropic.com)
+- [Vapi account](https://vapi.ai) (free trial available)
+- [OpenAI API key](https://platform.openai.com/api-keys)
 - A publicly accessible server (Railway, Render, Fly.io, or ngrok for local testing)
 
 ### 2. Install
@@ -48,115 +49,129 @@ cd ai-receptionist
 npm install
 ```
 
-### 3. Configure
+### 3. Configure environment
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and fill in:
+Edit `.env` and set at minimum:
+- `BUSINESS_NAME`, `BUSINESS_TYPE`, `BUSINESS_HOURS`, `OWNER_NAME`, `RECEPTIONIST_NAME`
+- `SERVER_URL` — your public server URL (e.g. `https://abc123.ngrok.io`)
+- `VAPI_API_KEY` — from [dashboard.vapi.ai/keys](https://dashboard.vapi.ai/keys)
 
-- `BUSINESS_NAME` — your business name
-- `BUSINESS_TYPE` — e.g. "real estate agency", "law firm", "dental practice"
-- `BUSINESS_HOURS` — spoken to callers when relevant
-- `OWNER_NAME` — whose name the AI mentions ("I'll have Sarah call you back")
-- `RECEPTIONIST_NAME` — the AI's name ("Hi, I'm Alex")
-- `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` — from Twilio Console
-- `TWILIO_PHONE_NUMBER` — your Twilio number in E.164 format (+15550001234)
-- `ANTHROPIC_API_KEY` — from console.anthropic.com
+### 4. Add your OpenAI key to Vapi
 
-### 4. (Optional) Google Calendar
+Vapi calls OpenAI directly using your key, so you enter it in Vapi's dashboard (not `.env`):
 
-Skip this if you just want leads saved to a JSON file.
+1. Log in to [dashboard.vapi.ai](https://dashboard.vapi.ai)
+2. Go to **Provider Keys** → **OpenAI**
+3. Paste your OpenAI API key and save
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create a project → **APIs & Services** → **Enable APIs** → enable **Google Calendar API**
-3. **IAM & Admin** → **Service Accounts** → **Create service account** → download the JSON key
-4. Save the JSON key as `google-service-account.json` in the project root
-5. In **Google Calendar** → open your calendar's **Settings** → **Share with specific people**
-   - Add the service account email (looks like `name@project.iam.gserviceaccount.com`)
-   - Permission: **Make changes to events**
-6. Copy your **Calendar ID** from Settings → **Integrate calendar**
-7. In `.env`: set `GOOGLE_SERVICE_ACCOUNT_KEY_PATH=./google-service-account.json` and `GOOGLE_CALENDAR_ID=your-calendar-id`
-
-### 5. Run
+### 5. Start the server
 
 ```bash
-npm start          # production
-npm run dev        # development with auto-reload (requires nodemon)
+npm start        # or: npm run dev  (auto-reload)
 ```
 
-### 6. Connect Twilio
-
-Your server needs a public URL. For local testing use [ngrok](https://ngrok.com):
+For local testing, expose with ngrok:
 
 ```bash
 ngrok http 3000
-# copy the https URL, e.g. https://abc123.ngrok.io
+# copy the https URL → set as SERVER_URL in .env
 ```
 
-In the [Twilio Console](https://console.twilio.com):
+### 6. Create the AI assistant
 
-1. Go to **Phone Numbers** → your number → **Configure**
-2. Under **Voice & Fax** → **A call comes in**:
-   - Set to **Webhook**
-   - URL: `https://your-domain.com/call/incoming`
-   - Method: `HTTP POST`
-3. Under **Call Status Changes** → Status callback URL:
-   - URL: `https://your-domain.com/call/status`
-   - Method: `HTTP POST`
-4. Save
+```bash
+npm run setup
+```
 
-Your AI receptionist is now live. Call your Twilio number to test it.
+This calls the Vapi API to create an assistant configured with your business details, system prompt, GPT-4o, and tool definitions. It prints an **Assistant ID** — copy it into your `.env`:
+
+```
+VAPI_ASSISTANT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```
+
+Re-run `npm run setup` anytime you change the system prompt or business details.
+
+### 7. Get a phone number & link the assistant
+
+**Option A — New Vapi number (easiest):**
+1. [dashboard.vapi.ai/phone-numbers](https://dashboard.vapi.ai/phone-numbers) → **Create phone number**
+2. Under **Assistant**, select the assistant you just created
+3. Done — call that number to test
+
+**Option B — Forward your existing number:**
+On your phone, set up conditional call forwarding (when busy / no answer) to your Vapi number:
+- iPhone: `*61*<vapi-number>#` (no answer) and `*67*<vapi-number>#` (busy)
+- Android: Settings → Phone → Call forwarding
+- Carrier: call your carrier to set up forwarding
+
+The AI answers when you don't pick up. Calls you do answer go through normally.
+
+---
+
+## Optional: Google Calendar
+
+Without this, appointments are saved to `data/appointments.json` only. The AI still confirms the booking to the caller.
+
+**Setup:**
+1. [console.cloud.google.com](https://console.cloud.google.com) → create project → enable **Google Calendar API**
+2. **IAM & Admin → Service Accounts** → create one → download the JSON key
+3. Save the key as `google-service-account.json` in the project root
+4. In Google Calendar → **Settings → Share with specific people** → add the service account email with **"Make changes to events"** permission
+5. Copy the **Calendar ID** from Calendar Settings → Integrate calendar
+6. In `.env`: set `GOOGLE_SERVICE_ACCOUNT_KEY_PATH` and `GOOGLE_CALENDAR_ID`
 
 ---
 
 ## File structure
 
 ```
-├── server.js                  # Express app entry point
+├── server.js                    ← Express entry point
 ├── src/
 │   ├── handlers/
-│   │   └── call.js            # Twilio webhook routes + TwiML generation
+│   │   └── vapi.js              ← Vapi webhook (tool-calls, call events)
 │   ├── services/
-│   │   ├── ai.js              # Claude API integration
-│   │   ├── calendar.js        # Google Calendar booking
-│   │   ├── leads.js           # Save leads + appointments to JSON
-│   │   └── sessions.js        # In-memory call session store
+│   │   ├── calendar.js          ← Google Calendar booking
+│   │   └── leads.js             ← Save leads + appointments to JSON
+│   ├── setup/
+│   │   └── assistant.js         ← One-time script to create/update Vapi assistant
 │   └── prompts/
-│       └── system.js          # AI system prompt (receptionist behaviour)
+│       └── system.js            ← AI receptionist personality + rules
 ├── data/
-│   ├── leads.json             # Captured leads (auto-created)
-│   └── appointments.json      # Booked appointments (auto-created)
-├── .env.example               # Environment variable template
-└── package.json
+│   ├── leads.json               ← Captured leads (auto-created)
+│   └── appointments.json        ← Booked appointments (auto-created)
+└── .env.example
 ```
 
-## Customising the AI's behaviour
+## Customising the AI
 
 Edit `src/prompts/system.js` to change:
+- Spam detection rules (add industry-specific signals)
+- Lead qualification questions
+- Tone and style (more formal, more casual, etc.)
+- Appointment flow (ask for specific info)
 
-- **Spam detection rules** — add industry-specific spam signals
-- **Lead qualification questions** — tailor to your business
-- **Tone and style** — make it more formal, casual, etc.
-- **Appointment flow** — ask for specific info relevant to your service
+Then re-run `npm run setup` to push the updated prompt to Vapi.
 
-## Deploying to production
-
-The app is stateless (sessions are in-memory, data in flat files) and runs fine on any Node host:
-
-- **Railway**: connect repo → set env vars → deploy
-- **Render**: same — set `npm start` as start command
-- **Fly.io**: `fly launch` → set secrets with `fly secrets set KEY=value`
-
-For persistence in production, swap `src/services/leads.js` to write to a database (Postgres, MongoDB, Airtable, etc.) or a CRM API (HubSpot, Salesforce).
-
-## Viewing captured leads and appointments
+## Viewing leads and appointments
 
 ```bash
 cat data/leads.json
 cat data/appointments.json
 ```
+
+## Deploying to production
+
+The app runs fine on any Node.js host:
+
+- **Railway**: connect repo → set env vars → deploy (auto-detects `npm start`)
+- **Render**: same, set start command to `npm start`
+- **Fly.io**: `fly launch` then `fly secrets set KEY=value`
+
+For production persistence, swap `src/services/leads.js` to write to a database (Postgres, Airtable) or CRM (HubSpot API, Salesforce, etc.).
 
 ## Environment variables reference
 
@@ -165,15 +180,14 @@ cat data/appointments.json
 | `BUSINESS_NAME` | Yes | Your business name |
 | `BUSINESS_TYPE` | Yes | What your business does |
 | `BUSINESS_HOURS` | Yes | Spoken to callers |
-| `OWNER_NAME` | Yes | Name used in "I'll have X call you" |
-| `RECEPTIONIST_NAME` | Yes | AI's name |
-| `TWILIO_ACCOUNT_SID` | Yes | Twilio account SID |
-| `TWILIO_AUTH_TOKEN` | Yes | Twilio auth token |
-| `TWILIO_PHONE_NUMBER` | Yes | Your Twilio phone number |
-| `TWILIO_VOICE` | No | TTS voice (default: `Polly.Joanna`) |
-| `SPEECH_TIMEOUT_SECONDS` | No | Silence timeout (default: `3`) |
-| `ANTHROPIC_API_KEY` | Yes | Claude API key |
+| `OWNER_NAME` | Yes | Used in "I'll have X call you back" |
+| `RECEPTIONIST_NAME` | Yes | The AI's name |
+| `SERVER_URL` | Yes | Your public server URL (no trailing slash) |
+| `PORT` | No | HTTP port (default `3000`) |
+| `VAPI_API_KEY` | Yes | From dashboard.vapi.ai/keys |
+| `VAPI_ASSISTANT_ID` | After setup | Set by `npm run setup` |
+| `OPENAI_MODEL` | No | Model (default `gpt-4o`) |
+| `OPENAI_VOICE` | No | TTS voice (default `nova`) |
 | `GOOGLE_SERVICE_ACCOUNT_KEY_PATH` | No | Path to Google service account JSON |
 | `GOOGLE_CALENDAR_ID` | No | Google Calendar ID |
-| `APPOINTMENT_DURATION_MINUTES` | No | Slot length (default: `30`) |
-| `PORT` | No | HTTP port (default: `3000`) |
+| `APPOINTMENT_DURATION_MINUTES` | No | Slot length (default `30`) |
