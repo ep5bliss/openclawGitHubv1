@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Transcription & Recreation</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Video Transcription & Recreation</h1>
+      <p class="subtitle">Paste a TikTok or YouTube Short link to transcribe, analyze, and recreate</p>
+    </header>
+
+    <!-- Guidelines Upload -->
+    <section class="card" id="guidelines-section">
+      <h2>Thumbnail Guidelines</h2>
+      <div id="guidelines-status" class="status-badge">No guidelines uploaded</div>
+      <div class="upload-area">
+        <input type="file" id="guidelines-file" accept=".md" hidden>
+        <button class="btn btn-secondary" onclick="document.getElementById('guidelines-file').click()">
+          Upload .md Guidelines
+        </button>
+        <span id="guidelines-filename" class="filename"></span>
+      </div>
+      <div id="guidelines-preview" class="preview hidden"></div>
+    </section>
+
+    <!-- URL Input -->
+    <section class="card">
+      <h2>New Project</h2>
+      <form id="url-form">
+        <div class="input-group">
+          <input type="url" id="video-url" placeholder="Paste TikTok or YouTube Shorts URL..." required>
+          <button type="submit" class="btn btn-primary" id="submit-btn">Process Video</button>
+        </div>
+        <p class="hint">Supports: TikTok, YouTube Shorts, YouTube videos</p>
+      </form>
+    </section>
+
+    <!-- Projects List -->
+    <section id="projects-section">
+      <h2>Projects</h2>
+      <div id="projects-list" class="projects-list">
+        <p class="empty-state">No projects yet. Paste a video URL above to get started.</p>
+      </div>
+    </section>
+
+    <!-- Project Detail Modal -->
+    <div id="project-modal" class="modal hidden">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <div id="modal-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
