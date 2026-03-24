@@ -1,16 +1,18 @@
 const OpenAI = require('openai');
 const fs = require('fs');
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+function getClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY is not set in .env');
+  }
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+}
 
 /**
  * Transcribe audio using OpenAI Whisper API
  */
 async function transcribe(audioPath) {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error('OPENAI_API_KEY is not set in .env');
-  }
-
+  const openai = getClient();
   const audioFile = fs.createReadStream(audioPath);
 
   const response = await openai.audio.transcriptions.create({

@@ -1,11 +1,17 @@
 const OpenAI = require('openai');
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+function getClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY is not set in .env');
+  }
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+}
 
 /**
  * Generate a detailed recreation script based on analysis
  */
 async function recreate(transcription, analysis, videoInfo) {
+  const openai = getClient();
   const prompt = `You are an expert short-form video producer. Based on the following analysis of an original video, create a COMPLETE recreation script that someone could follow to recreate this video.
 
 ORIGINAL VIDEO INFO:

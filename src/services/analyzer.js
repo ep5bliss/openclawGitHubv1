@@ -1,11 +1,17 @@
 const OpenAI = require('openai');
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+function getClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY is not set in .env');
+  }
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+}
 
 /**
  * Analyze the video content based on transcription and metadata
  */
 async function analyze(transcription, videoInfo, url) {
+  const openai = getClient();
   const prompt = `You are an expert short-form video analyst. Analyze this TikTok/YouTube Short and provide a detailed breakdown.
 
 VIDEO INFO:

@@ -1,11 +1,17 @@
 const OpenAI = require('openai');
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+function getClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY is not set in .env');
+  }
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+}
 
 /**
  * Generate a thumbnail concept based on video analysis and guidelines
  */
 async function generate(transcription, analysis, guidelines) {
+  const openai = getClient();
   const guidelinesSection = guidelines
     ? `\nTHUMBNAIL GUIDELINES (from uploaded MD file):\n${guidelines}\n`
     : '\nNo custom thumbnail guidelines uploaded. Use general best practices.\n';
