@@ -165,14 +165,14 @@ async function openProject(id) {
     const res = await fetch(`/api/projects/${id}`);
     const project = await res.json();
     renderModal(project);
-    modal.classList.remove('hidden');
+    modal.classList.add('visible');
   } catch (err) {
     alert('Error loading project: ' + err.message);
   }
 }
 
 function closeModal() {
-  modal.classList.add('hidden');
+  modal.classList.remove('visible');
 }
 
 // Close modal on outside click
