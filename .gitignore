@@ -1,5 +1,7 @@
 node_modules/
 .env
-google-service-account.json
-data/*.json
 *.log
+downloads/
+projects/
+uploads/*.md
+data/*.json
