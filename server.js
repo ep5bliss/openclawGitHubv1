@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const vapiRouter = require('./src/handlers/vapi');
+const contentRouter = require('./src/handlers/content');
 
 const app = express();
 
@@ -10,6 +11,9 @@ app.use(express.urlencoded({ extended: false }));
 
 // Vapi webhook routes
 app.use('/vapi', vapiRouter);
+
+// Content tracking systems
+app.use('/content', contentRouter);
 
 // Health check
 app.get('/health', (req, res) => {
