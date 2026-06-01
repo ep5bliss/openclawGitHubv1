@@ -4,12 +4,31 @@ const { load, save } = require('../storage');
 
 const router = express.Router();
 
+// Must be before /:id routes to avoid conflict
+router.get('/stats/summary', (req, res) => {
+  const { ideas } = load();
+  const categories = [...new Set(ideas.map(i => i.category).filter(Boolean))];
+  const formats = {};
+  ideas.forEach(i => {
+    if (i.format) formats[i.format] = (formats[i.format] || 0) + 1;
+  });
+  res.json({
+    total: ideas.length,
+    to_create: ideas.filter(i => i.status === 'to_create').length,
+    created: ideas.filter(i => i.status === 'created').length,
+    skipped: ideas.filter(i => i.status === 'skipped').length,
+    categories,
+    formats,
+  });
+});
+
 router.get('/', (req, res) => {
-  const { status, category, source } = req.query;
+  const { status, category, source, format } = req.query;
   let { ideas } = load();
   if (status) ideas = ideas.filter(i => i.status === status);
   if (category) ideas = ideas.filter(i => i.category === category);
   if (source) ideas = ideas.filter(i => i.source === source);
+  if (format) ideas = ideas.filter(i => i.format === format);
   ideas.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   res.json(ideas);
 });
@@ -22,7 +41,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const { title, source, sourceUrl, category, niche, notes, scheduledDate } = req.body;
+  const { title, source, sourceUrl, category, niche, format, hook, template, tags, notes, scheduledDate, whyItWorks } = req.body;
   if (!title) return res.status(400).json({ error: 'title is required' });
   const db = load();
   const idea = {
@@ -32,8 +51,13 @@ router.post('/', (req, res) => {
     sourceUrl: sourceUrl || '',
     category: category || '',
     niche: niche || '',
+    format: format || '',
+    hook: hook || '',
+    template: template || '',
+    tags: tags || '',
     status: 'to_create',
     notes: notes || '',
+    whyItWorks: whyItWorks || '',
     script: '',
     scheduledDate: scheduledDate || '',
     createdAt: new Date().toISOString(),
@@ -48,7 +72,7 @@ router.put('/:id', (req, res) => {
   const db = load();
   const idx = db.ideas.findIndex(i => i.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Not found' });
-  const allowed = ['title', 'source', 'sourceUrl', 'category', 'niche', 'status', 'notes', 'script', 'scheduledDate'];
+  const allowed = ['title', 'source', 'sourceUrl', 'category', 'niche', 'format', 'hook', 'template', 'tags', 'status', 'notes', 'whyItWorks', 'script', 'scheduledDate'];
   allowed.forEach(k => {
     if (req.body[k] !== undefined) db.ideas[idx][k] = req.body[k];
   });
@@ -64,18 +88,6 @@ router.delete('/:id', (req, res) => {
   db.ideas.splice(idx, 1);
   save(db);
   res.json({ ok: true });
-});
-
-router.get('/stats/summary', (req, res) => {
-  const { ideas } = load();
-  const categories = [...new Set(ideas.map(i => i.category).filter(Boolean))];
-  res.json({
-    total: ideas.length,
-    to_create: ideas.filter(i => i.status === 'to_create').length,
-    created: ideas.filter(i => i.status === 'created').length,
-    skipped: ideas.filter(i => i.status === 'skipped').length,
-    categories,
-  });
 });
 
 module.exports = router;
