@@ -1,0 +1,20 @@
+{
+  "name": "nutrition-label-decoder-build",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Markdown -> print-ready PDF pipeline for the Nutrition Label Decoder product line",
+  "scripts": {
+    "build": "node render.mjs",
+    "build:letter": "node render.mjs --trim=letter",
+    "build:a4": "node render.mjs --trim=a4",
+    "build:html": "node render.mjs --html-only"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "markdown-it": "^14.1.0",
+    "markdown-it-attrs": "^4.3.1",
+    "markdown-it-container": "^4.0.0",
+    "playwright-core": "^1.49.0"
+  }
+}

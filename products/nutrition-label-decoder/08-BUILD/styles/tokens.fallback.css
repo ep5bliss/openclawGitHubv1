@@ -1,0 +1,18 @@
+/* Fallback tokens — used only until 02-BRAND/tokens.css lands.
+   The real brand system overrides every value here. */
+:root{
+  --c-primary:#1F5F4B; --c-primary-ink:#133E31; --c-secondary:#E8933A; --c-accent:#3D5A96;
+  --c-ink:#1A1A1A; --c-ink-soft:#4A4A4A; --c-ink-faint:#6B6B6B;
+  --c-rule:#D4D4D4; --c-surface:#FFFFFF; --c-surface-2:#F6F5F1; --c-surface-3:#EDEBE4;
+  --c-band-low:#E3EEF6; --c-band-mid:#F7F1E4; --c-band-high:#F3E7EE;
+  --c-band-low-ink:#1C4A68; --c-band-mid-ink:#6B5418; --c-band-high-ink:#6E2A50;
+  --font-display:Georgia,'Times New Roman',serif;
+  --font-text:Georgia,'Times New Roman',serif;
+  --font-ui:Arial,Helvetica,sans-serif;
+  --font-kid:'Trebuchet MS',Verdana,sans-serif;
+  --font-label:Helvetica,Arial,sans-serif;
+  --fs-body:11pt; --fs-small:9pt; --fs-h1:24pt; --fs-h2:16pt; --fs-h3:12.5pt;
+  --lh-body:1.5;
+  --sp-1:4pt; --sp-2:8pt; --sp-3:12pt; --sp-4:18pt; --sp-5:26pt; --sp-6:38pt;
+  --radius:6pt; --radius-lg:10pt;
+}
