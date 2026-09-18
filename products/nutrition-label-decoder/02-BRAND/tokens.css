@@ -1,0 +1,957 @@
+/* ==========================================================================
+   FLIP THE BOX — Design Tokens v1.0
+   products/nutrition-label-decoder/02-BRAND/tokens.css
+
+   The single source of truth for color, type, space, radius and shadow.
+   Imported by 08-BUILD (HTML -> PDF pipeline), the sales page, and every
+   printable. Nothing in this project hard-codes a hex value.
+
+   CONTRACT
+   --------
+   1. Every contrast ratio referenced in a comment below is a measured WCAG 2.x
+      value, not an estimate. See 02-BRAND/brand-system.md section 3.6.
+   2. Color is never the sole carrier of meaning. The Amount Ladder
+      (--dv-*) always ships with its glyph and its word.
+   3. The @media print block is authoritative for anything a customer prints
+      on a home inkjet. It is deliberately more restrictive than screen.
+
+   LAYER ORDER
+   -----------
+   :root (light)  ->  @media (prefers-color-scheme: dark) :root:not([data-theme="light"])
+                  ->  :root[data-theme="dark"]            (explicit opt-in, wins)
+                  ->  :root[data-theme="mono"]            (grayscale print artifact)
+                  ->  @media print                        (overrides everything)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   FONT FACES
+   All faces are SIL OFL 1.1 (Arimo: Apache 2.0 via Google Fonts / OFL 1.1
+   upstream). All permit unlimited commercial embedding in a sold PDF.
+   Self-host in 08-BUILD/fonts/ — do not link to a CDN in a print build.
+   Paths are relative to this file's location when imported by the build.
+   -------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("../08-BUILD/fonts/Fraunces[SOFT,WONK,opsz,wght].woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-stretch: normal;
+  font-style: normal;
+  font-display: block; /* block, not swap: a PDF render must not capture a fallback */
+}
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("../08-BUILD/fonts/SourceSerif4[opsz,wght].woff2") format("woff2-variations");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("../08-BUILD/fonts/SourceSerif4-Italic[opsz,wght].woff2") format("woff2-variations");
+  font-weight: 200 900;
+  font-style: italic;
+  font-display: block;
+}
+@font-face {
+  font-family: "Lexend";
+  src: url("../08-BUILD/fonts/Lexend[wght].woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Andika";
+  src: url("../08-BUILD/fonts/Andika-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Andika";
+  src: url("../08-BUILD/fonts/Andika-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("../08-BUILD/fonts/AtkinsonHyperlegibleNext[wght].woff2") format("woff2-variations");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Arimo";
+  src: url("../08-BUILD/fonts/Arimo[wght].woff2") format("woff2-variations");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: block;
+}
+
+/* ==========================================================================
+   :root — LIGHT (default, and the ground truth for print)
+   ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  /* ---------------------------------------------------------------
+     1. RAW PALETTE — never referenced directly by a component.
+        Components use the SEMANTIC aliases in section 2.
+     --------------------------------------------------------------- */
+
+  /* Neutral ramp, 5 steps, warm. CMYK values are naive uncoated approximations
+     for ink-load estimation only; rebuild in profile before any offset run. */
+  --c-paper:  #FBF7F0;  /* N1  CMYK  0/ 2/ 4/ 2   L* 97.4 */
+  --c-oat:    #EDE4D6;  /* N2  CMYK  0/ 4/10/ 7   L* 90.9 */
+  --c-stone:  #C3B8A6;  /* N3  CMYK  0/ 6/15/24   L* 75.2 */
+  --c-slate:  #665E55;  /* N4  CMYK  0/ 8/17/60   L* 40.4 */
+  --c-ink:    #22201D;  /* N5  CMYK  0/ 6/15/87   L* 12.4  (warm near-black, never #000) */
+  --c-white:  #FFFFFF;
+
+  /* Primary — Blueberry. Display type, rules, parent track. */
+  --c-blueberry:        #23386B;  /* CMYK 67/48/ 0/58   L* 24.5 */
+  --c-blueberry-16:     #DADFEA;  /*                    L* 88.7 */
+  --c-blueberry-08:     #EDEFF5;  /*                    L* 94.5 */
+  --c-blueberry-bright: #3A57A0;  /* screen/link only, not for print body */
+
+  /* Secondary — Paprika. The pop. CTAs, Try-it, Blurb. */
+  --c-paprika:        #AD3F1B;  /* CMYK  0/64/84/32   L* 42.0  text-safe */
+  --c-paprika-bright: #D4622A;  /* CMYK  0/54/80/17   L* 55.0  FILL ONLY — never type */
+  --c-paprika-16:     #F2D5C8;
+  --c-paprika-08:     #F9EAE4;
+
+  /* Accent — Sunbutter. Fills, badges, Ages 6-9 track. NEVER carries text. */
+  --c-sunbutter:    #F4B63F;  /* CMYK  0/25/74/ 4   L* 77.9 */
+  --c-sunbutter-16: #FCEBCB;
+  --c-sunbutter-08: #FEF6E6;
+
+  /* Extended — Tidepool. Ages 10-13 track. */
+  --c-tidepool:    #1A6C69;  /* CMYK 76/ 0/ 3/58   L* 41.2 */
+  --c-tidepool-16: #CFE3E1;
+  --c-tidepool-08: #E7F1F0;
+
+  /* ---------------------------------------------------------------
+     2. SEMANTIC COLOR — what components actually reference.
+     --------------------------------------------------------------- */
+
+  --color-bg:            var(--c-paper);
+  --color-bg-raised:     var(--c-white);
+  --color-bg-sunken:     var(--c-oat);
+  --color-text:          var(--c-ink);        /* 15.22:1 on --color-bg  AAA */
+  --color-text-muted:    var(--c-slate);      /*  5.96:1 on --color-bg  AA  */
+  --color-text-inverse:  var(--c-paper);      /* 15.22:1 on --c-ink     AAA */
+  --color-heading:       var(--c-blueberry);  /* 10.63:1 on --color-bg  AAA */
+  --color-link:          var(--c-blueberry);  /* 10.63:1 AAA */
+  --color-link-hover:    var(--c-paprika);    /*  5.61:1 AA  */
+  --color-border:        var(--c-stone);
+  --color-border-strong: var(--c-slate);
+  --color-rule:          var(--c-stone);
+
+  --color-accent:        var(--c-paprika);
+  --color-accent-on:     var(--c-white);      /*  5.99:1 on Paprika     AA  */
+  --color-highlight:     var(--c-sunbutter);
+  --color-highlight-on:  var(--c-ink);        /*  8.98:1 on Sunbutter   AAA */
+
+  --color-focus:         var(--c-paprika);
+  --focus-ring-width:    2px;
+  --focus-ring-offset:   2px;
+
+  /* Track identity — three books, three colors, 77.9 / 41.2 / 24.5 L*
+     so the spines are still tellable apart on a B/W printout. */
+  --track-parent: var(--c-blueberry);
+  --track-kid-1:  var(--c-sunbutter);   /* Ages 6-9   */
+  --track-kid-2:  var(--c-tidepool);    /* Ages 10-13 */
+
+  /* ---------------------------------------------------------------
+     3. THE AMOUNT LADDER (semantic high/low) — see brand-system.md 3.4
+        NOT red-vs-green. One hue, three lightnesses, plus a mandatory
+        glyph and word. "More ink = more of it."
+        Colorblind-safe by construction: no hue discrimination required.
+        Grayscale deltas: high-mid 22.3 L*, mid-low 37.9 L*, high-low 60.2 L*.
+        The SAME color encodes a lot of fibre and a lot of sodium. It reports
+        quantity; it never reports approval.
+     --------------------------------------------------------------- */
+
+  --dv-high:    #2B3F55;          /* "A LOT"      glyph triangle x3  L* 25.9 */
+  --dv-mid:     #5F7588;          /* "SOME"       glyph triangle x2  L* 48.2 */
+  --dv-low:     #CDD9E2;          /* "A LITTLE"   glyph triangle x1  L* 86.1 */
+
+  /* Text colors ON each rung. --dv-mid-on is pure white, NOT --c-paper:
+     paper on dv-mid is 4.48:1 (fails AA body); white is 4.79:1 (passes). */
+  --dv-high-on: var(--c-white);   /* 10.80:1  AAA */
+  --dv-mid-on:  #FFFFFF;          /*  4.79:1  AA  — do not change to paper */
+  --dv-low-on:  var(--c-ink);     /* 11.31:1  AAA */
+
+  /* Glyphs are tokens so they can never drift between components. */
+  --dv-high-glyph: "\25B2\25B2\25B2";
+  --dv-mid-glyph:  "\25B2\25B2";
+  --dv-low-glyph:  "\25B2";
+
+  /* ---------------------------------------------------------------
+     4. COMPONENT COLOR — resolved once, here.
+     --------------------------------------------------------------- */
+
+  --callout-bg:        var(--c-blueberry-08);
+  --callout-rule:      var(--c-blueberry);
+  --callout-text:      var(--c-ink);          /* 14.13:1 AAA */
+
+  --tryit-bg:          var(--c-paprika-08);
+  --tryit-border:      var(--c-paprika);
+  --tryit-tab-bg:      var(--c-paprika);
+  --tryit-tab-text:    var(--c-white);        /*  5.99:1 AA */
+  --tryit-writeline:   var(--c-stone);        /* never lighter: pencil vanishes */
+
+  --myth-front-bg:     var(--c-sunbutter-16);
+  --myth-front-key:    var(--c-stone);        /* grayscale tell for the left column */
+  --myth-panel-bg:     var(--c-blueberry-08);
+  --myth-panel-text:   var(--c-blueberry);
+
+  --parentnote-bg:     var(--c-oat);
+  --parentnote-text:   var(--c-ink);          /* 12.90:1 AAA */
+  --parentnote-label:  var(--c-slate);
+
+  --answerkey-bg:      var(--c-oat);
+  --answerkey-ref:     var(--c-blueberry);
+  --answerkey-text:    var(--c-ink);
+  --answerkey-open:    var(--c-slate);
+
+  --badge-bg:          var(--c-sunbutter);
+  --badge-ring:        var(--c-ink);
+  --badge-text:        var(--c-ink);          /*  8.98:1 AAA */
+
+  --panel-bg:          var(--c-white);        /* FDA panel is always on white */
+  --panel-ink:         #000000;               /* the one sanctioned pure black */
+  --panel-rule:        #000000;
+
+  /* ---------------------------------------------------------------
+     4b. SKIN TONES — "The Hands" (illustration-bible.md section 3.3)
+         The reader is never drawn; their hands are. Six tones, rotated,
+         with no default and no "main" tone. Contour stays --c-ink on all
+         six. 09-QA audits the rotation from each asset's sidecar JSON.
+     --------------------------------------------------------------- */
+
+  --hand-1:      #F3D6C0;
+  --hand-1-line: #D9B69B;
+  --hand-2:      #E8BC98;
+  --hand-2-line: #C99A73;
+  --hand-3:      #D19E72;
+  --hand-3-line: #AE7C51;
+  --hand-4:      #B07A4E;
+  --hand-4-line: #8E5E38;
+  --hand-5:      #8A5A38;
+  --hand-5-line: #6B4227;
+  --hand-6:      #5C3A25;
+  --hand-6-line: #452A1A;
+
+  /* ---------------------------------------------------------------
+     5. TYPOGRAPHY
+     --------------------------------------------------------------- */
+
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-text:    "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-sans:    "Lexend", "Helvetica Neue", Arial, sans-serif;
+  --font-kid:     "Andika", "Lexend", "Comic Neue", sans-serif;   /* ages 6-9 */
+  --font-a11y:    "Atkinson Hyperlegible Next", "Atkinson Hyperlegible",
+                  "Lexend", Arial, sans-serif;                     /* Accessible Edition */
+  --font-panel:   "Arimo", Arial, Helvetica, sans-serif;           /* FDA panel replica */
+
+  /* Variable-font axis presets. Apply with font-variation-settings. */
+  --fv-display-cover:  "opsz" 144, "SOFT" 60, "WONK" 1;
+  --fv-display-head:   "opsz" 72,  "SOFT" 50, "WONK" 1;
+  --fv-display-sub:    "opsz" 24,  "SOFT" 40, "WONK" 0;
+
+  /* Type scale — SCREEN (rem, root 16px). Ratio 1.25 major third. */
+  --t-display-xl: 5rem;      --lh-display-xl: 0.95;
+  --t-display-l:  3.75rem;   --lh-display-l:  1.0;
+  --t-display-m:  3rem;      --lh-display-m:  1.05;
+  --t-h1:         2.25rem;   --lh-h1:         1.15;
+  --t-h2:         1.875rem;  --lh-h2:         1.25;
+  --t-h3:         1.5rem;    --lh-h3:         1.35;
+  --t-h4:         1.25rem;   --lh-h4:         1.4;
+  --t-h5:         1.125rem;  --lh-h5:         1.5;
+  --t-body-kid1:  1.25rem;   --lh-body-kid1:  1.6;   /* ages 6-9,  Andika */
+  --t-body-kid2:  1.125rem;  --lh-body-kid2:  1.6;   /* ages 10-13, Lexend */
+  --t-body:       1rem;      --lh-body:       1.6;   /* parent, Source Serif 4 */
+  --t-body-lead:  1.125rem;  --lh-body-lead:  1.55;
+  --t-small:      0.9375rem; --lh-small:      1.55;
+  --t-caption:    0.875rem;  --lh-caption:    1.45;
+  --t-micro:      0.75rem;   --lh-micro:      1.4;
+  --t-panel:      0.8125rem; --lh-panel:      1.1;
+
+  /* Type scale — PRINT (pt). Every leading is a whole multiple of the
+     5pt baseline grid. These are consumed by the @media print block and by
+     08-BUILD's paged-media stylesheet. */
+  --pt-display-xl: 96pt;  --pt-lh-display-xl: 90pt;  /* 18 baselines */
+  --pt-display-l:  60pt;  --pt-lh-display-l:  55pt;  /* 11 */
+  --pt-display-m:  50pt;  --pt-lh-display-m:  55pt;  /* 11 */
+  --pt-h1:         40pt;  --pt-lh-h1:         45pt;  /*  9 */
+  --pt-h2:         32pt;  --pt-lh-h2:         35pt;  /*  7 */
+  --pt-h3:       25.5pt;  --pt-lh-h3:         30pt;  /*  6 */
+  --pt-h4:       20.5pt;  --pt-lh-h4:         25pt;  /*  5 */
+  --pt-h5:       16.5pt;  --pt-lh-h5:         20pt;  /*  4 */
+  --pt-body-kid1:  16pt;  --pt-lh-body-kid1:  25pt;  /*  5 */
+  --pt-body-kid2:  13pt;  --pt-lh-body-kid2:  20pt;  /*  4 */
+  --pt-body:     10.5pt;  --pt-lh-body:       15pt;  /*  3 */
+  --pt-body-lead:  13pt;  --pt-lh-body-lead:  20pt;  /*  4 */
+  --pt-small:     9.5pt;  --pt-lh-small:      15pt;  /*  3 */
+  --pt-caption:   8.5pt;  --pt-lh-caption:    10pt;  /*  2 */
+  --pt-micro:       7pt;  --pt-lh-micro:      10pt;  /*  2 */
+  --pt-panel:       8pt;  --pt-lh-panel:       9pt;  /* off-grid by design */
+
+  /* Weights */
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semi:    600;
+  --fw-bold:    700;
+  --fw-heavy:   800;
+
+  /* Tracking */
+  --track-tight-xl: -0.025em;  /* Fraunces >= 60pt */
+  --track-tight:    -0.015em;  /* Fraunces >= 32pt */
+  --track-normal:    0em;
+  --track-caps:      0.06em;   /* Lexend all-caps labels, chips, tabs */
+  --track-kid:       0.01em;   /* Andika at 16pt. Never negative. */
+  --track-a11y:      0.025em;  /* Accessible Edition */
+
+  /* Measure (max line length) */
+  --measure-body:      68ch;
+  --measure-kid1:      44ch;
+  --measure-kid2:      58ch;
+  --measure-a11y:      56ch;
+  --measure-hard-max:  78ch;
+
+  /* ---------------------------------------------------------------
+     6. SPACING — screen 8px base / print 5pt baseline
+     --------------------------------------------------------------- */
+
+  --baseline:    0.5rem;   /* 8px on screen */
+  --baseline-pt: 5pt;      /* the print baseline grid unit */
+
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px  */
+  --space-2: 0.5rem;    /* 8px  */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.5rem;    /* 24px */
+  --space-6: 2rem;      /* 32px */
+  --space-7: 3rem;      /* 48px */
+  --space-8: 4rem;      /* 64px */
+  --space-9: 6rem;      /* 96px */
+
+  --space-1-pt:  2.5pt;
+  --space-2-pt:    5pt;
+  --space-3-pt:   10pt;
+  --space-4-pt:   15pt;
+  --space-5-pt:   20pt;
+  --space-6-pt:   30pt;
+  --space-7-pt:   40pt;
+  --space-8-pt:   60pt;
+  --space-9-pt:   80pt;
+
+  /* ---------------------------------------------------------------
+     7. LAYOUT — the Universal Live Block (fits Letter AND A4)
+        479 x 680 pt = 6.65 x 9.44 in = 169 x 240 mm
+     --------------------------------------------------------------- */
+
+  --block-w:        479pt;
+  --block-h:        680pt;
+  --grid-cols:      12;
+  --grid-col-w:     31.67pt;
+  --grid-gutter:    9pt;
+  --grid-gutter-px: 16px;
+
+  /* Letter */
+  --page-letter-w:        612pt;
+  --page-letter-h:        792pt;
+  --margin-letter-inside:  72pt;   /* 1.000in — clears the 0.875in 3-hole zone */
+  --margin-letter-outside: 61pt;   /* 0.847in */
+  --margin-letter-top:     54pt;
+  --margin-letter-bottom:  58pt;
+
+  /* A4 */
+  --page-a4-w:        595.28pt;
+  --page-a4-h:        841.89pt;
+  --margin-a4-inside:  70.87pt;    /* 25mm — clears the 21mm ISO 838 zone */
+  --margin-a4-outside: 45.35pt;    /* 16mm */
+  --margin-a4-top:     66pt;
+  --margin-a4-bottom:  95.9pt;
+
+  /* Safe zones */
+  --safe-3hole:      63pt;    /* 0.875in from binding edge, US */
+  --safe-iso838:  59.53pt;    /* 21mm from binding edge, A4 */
+  --safe-coil:       54pt;    /* 0.75in */
+  --safe-inkjet:     18pt;    /* 0.25in / 6.35mm — ABSOLUTE, all four edges */
+  --safe-perf:     13.5pt;    /* 0.1875in either side of a tear line */
+
+  /* ---------------------------------------------------------------
+     8. RADIUS
+        Nothing is square-cornered except the FDA panel replica,
+        which is square because the real thing is.
+     --------------------------------------------------------------- */
+
+  --radius-none: 0;
+  --radius-sm:   3px;
+  --radius-md:   6px;
+  --radius-lg:   12px;
+  --radius-xl:   20px;
+  --radius-pill: 999px;
+
+  --radius-sm-pt:  3pt;
+  --radius-md-pt:  6pt;
+  --radius-lg-pt: 12pt;
+
+  /* ---------------------------------------------------------------
+     9. BORDERS / RULES
+        0.5pt is the inkjet floor: thinner lines drop out intermittently.
+     --------------------------------------------------------------- */
+
+  --rule-hair:   0.5pt;
+  --rule-thin:  0.75pt;
+  --rule-base:     1pt;
+  --rule-mid:    1.5pt;
+  --rule-thick:    2pt;
+  --rule-heavy:    3pt;
+
+  /* ---------------------------------------------------------------
+     10. SHADOW
+         Screen only. Every shadow resolves to `none` in print — a blurred
+         drop shadow is the single loudest "clipart cheap" tell on paper,
+         and inkjets render soft shadows as dirty grey mush.
+     --------------------------------------------------------------- */
+
+  --shadow-none: none;
+  --shadow-xs: 0 1px 2px rgba(34, 32, 29, 0.06);
+  --shadow-sm: 0 1px 3px rgba(34, 32, 29, 0.08), 0 1px 2px rgba(34, 32, 29, 0.06);
+  --shadow-md: 0 4px 10px rgba(34, 32, 29, 0.09), 0 1px 3px rgba(34, 32, 29, 0.06);
+  --shadow-lg: 0 10px 28px rgba(34, 32, 29, 0.12), 0 2px 6px rgba(34, 32, 29, 0.07);
+  --shadow-xl: 0 22px 56px rgba(34, 32, 29, 0.16), 0 4px 10px rgba(34, 32, 29, 0.08);
+
+  /* The "printed sticker" lift — a hard offset, no blur. The only shadow
+     permitted on a printed page, and only on the badge component. */
+  --shadow-sticker: 2pt 2pt 0 var(--c-ink);
+
+  /* ---------------------------------------------------------------
+     11. MOTION (screen / sales page only)
+     --------------------------------------------------------------- */
+
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast:    120ms;
+  --dur-base:    200ms;
+  --dur-slow:    360ms;
+
+  /* ---------------------------------------------------------------
+     12. INK BUDGET (consumed by 08-BUILD's coverage linter)
+     --------------------------------------------------------------- */
+
+  --ink-budget-target: 0.18;  /* 18% average area coverage per page */
+  --ink-budget-max:    0.22;  /* build FAILS above this */
+  --tint-min:          0.08;  /* below 8% an inkjet bands and dithers */
+  --tint-max:          0.60;  /* above 60% on a customer-printed page */
+}
+
+/* ==========================================================================
+   DARK MODE
+   Two blocks, per the project pattern:
+     - the media query respects the OS preference unless the user forced light
+     - the explicit [data-theme="dark"] wins regardless of OS
+   The token VALUES are identical in both; they are written out twice rather
+   than aliased so neither block can silently drift from the other.
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    /* Surfaces — warm-neutral dark, not blue-black */
+    --c-paper: #14161A;   /* bg-0  L*  7.2 */
+    --c-oat:   #1C1F26;   /* bg-1  L* 11.7 */
+    --c-stone: #3A404B;   /* line  L* 26.9 */
+    --c-slate: #B6AFA4;   /* muted text inverts up the ramp */
+    --c-ink:   #F3EEE5;   /* text  L* 94.3 */
+    --c-white: #272B34;   /* "raised" surface, not white */
+
+    --c-blueberry:        #A8BDEE;  /* 9.64:1 on bg-0  AAA */
+    --c-blueberry-16:     #2A3550;
+    --c-blueberry-08:     #1F2634;
+    --c-blueberry-bright: #C3D2F5;
+
+    --c-paprika:        #F2865A;    /* 7.19:1 on bg-0  AAA */
+    --c-paprika-bright: #FF9E75;
+    --c-paprika-16:     #3A241B;
+    --c-paprika-08:     #261913;
+
+    --c-sunbutter:    #F6C560;      /* 11.28:1 on bg-0  AAA */
+    --c-sunbutter-16: #3A2F16;
+    --c-sunbutter-08: #241D0F;
+
+    --c-tidepool:    #5CC6BD;       /* 8.86:1 on bg-0  AAA */
+    --c-tidepool-16: #14332F;
+    --c-tidepool-08: #0F2321;
+
+    --color-bg:           #14161A;
+    --color-bg-raised:    #1C1F26;
+    --color-bg-sunken:    #0F1115;
+    --color-text:         #F3EEE5;  /* 15.67:1  AAA */
+    --color-text-muted:   #B6AFA4;  /*  8.33:1  AAA */
+    --color-text-inverse: #14161A;
+    --color-heading:      #A8BDEE;  /*  9.64:1  AAA */
+    --color-link:         #A8BDEE;
+    --color-link-hover:   #F2865A;  /*  7.19:1  AAA */
+    --color-border:       #3A404B;
+    --color-border-strong:#4E5663;
+    --color-rule:         #3A404B;
+    --color-accent:       #F2865A;
+    --color-accent-on:    #14161A;
+    --color-highlight:    #F6C560;
+    --color-highlight-on: #14161A;
+    --color-focus:        #F6C560;
+
+    /* AMOUNT LADDER — INVERTED ON PURPOSE.
+       The light-mode metaphor is "more ink = more of it".
+       On a dark ground there is no ink, so the metaphor becomes
+       "more light = more of it": A LOT is the brightest rung,
+       A LITTLE the dimmest. Direction of meaning is preserved;
+       direction of lightness is not. This is the only token group
+       whose dark values are not a tonal mirror of the light values. */
+    --dv-high:    #DCE8F5;   /* 13.28:1 on bg-1  AAA */
+    --dv-mid:     #8FA6BC;   /*  6.56:1 on bg-1  AA  */
+    --dv-low:     #4A5566;   /*  text on it: 6.53:1  AA */
+    --dv-high-on: #14161A;   /* 14.58:1  AAA */
+    --dv-mid-on:  #14161A;
+    --dv-low-on:  #F3EEE5;   /*  6.53:1  AA */
+
+    --callout-bg:      #1F2634;
+    --callout-rule:    #A8BDEE;
+    --callout-text:    #F3EEE5;
+    --tryit-bg:        #261913;
+    --tryit-border:    #F2865A;
+    --tryit-tab-bg:    #F2865A;
+    --tryit-tab-text:  #14161A;
+    --tryit-writeline: #4E5663;
+    --myth-front-bg:   #3A2F16;
+    --myth-front-key:  #4E5663;
+    --myth-panel-bg:   #1F2634;
+    --myth-panel-text: #A8BDEE;
+    --parentnote-bg:   #1C1F26;
+    --parentnote-text: #F3EEE5;
+    --parentnote-label:#B6AFA4;
+    --answerkey-bg:    #1C1F26;
+    --answerkey-ref:   #A8BDEE;
+    --answerkey-text:  #F3EEE5;
+    --answerkey-open:  #B6AFA4;
+    --badge-bg:        #F6C560;
+    --badge-ring:      #14161A;
+    --badge-text:      #14161A;
+
+    /* The FDA panel replica stays black-on-white in every theme.
+       It is a reproduction of a physical artifact, not UI chrome. */
+    --panel-bg:   #FFFFFF;
+    --panel-ink:  #000000;
+    --panel-rule: #000000;
+
+    --track-parent: #A8BDEE;
+    --track-kid-1:  #F6C560;
+    --track-kid-2:  #5CC6BD;
+
+    /* Shadows read as halos on dark; drop them to hairline surfaces. */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.55);
+    --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.65);
+    --shadow-xl: 0 22px 56px rgba(0, 0, 0, 0.7);
+    --shadow-sticker: 2pt 2pt 0 #000000;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --c-paper: #14161A;
+  --c-oat:   #1C1F26;
+  --c-stone: #3A404B;
+  --c-slate: #B6AFA4;
+  --c-ink:   #F3EEE5;
+  --c-white: #272B34;
+
+  --c-blueberry:        #A8BDEE;
+  --c-blueberry-16:     #2A3550;
+  --c-blueberry-08:     #1F2634;
+  --c-blueberry-bright: #C3D2F5;
+
+  --c-paprika:        #F2865A;
+  --c-paprika-bright: #FF9E75;
+  --c-paprika-16:     #3A241B;
+  --c-paprika-08:     #261913;
+
+  --c-sunbutter:    #F6C560;
+  --c-sunbutter-16: #3A2F16;
+  --c-sunbutter-08: #241D0F;
+
+  --c-tidepool:    #5CC6BD;
+  --c-tidepool-16: #14332F;
+  --c-tidepool-08: #0F2321;
+
+  --color-bg:           #14161A;
+  --color-bg-raised:    #1C1F26;
+  --color-bg-sunken:    #0F1115;
+  --color-text:         #F3EEE5;
+  --color-text-muted:   #B6AFA4;
+  --color-text-inverse: #14161A;
+  --color-heading:      #A8BDEE;
+  --color-link:         #A8BDEE;
+  --color-link-hover:   #F2865A;
+  --color-border:       #3A404B;
+  --color-border-strong:#4E5663;
+  --color-rule:         #3A404B;
+  --color-accent:       #F2865A;
+  --color-accent-on:    #14161A;
+  --color-highlight:    #F6C560;
+  --color-highlight-on: #14161A;
+  --color-focus:        #F6C560;
+
+  --dv-high:    #DCE8F5;
+  --dv-mid:     #8FA6BC;
+  --dv-low:     #4A5566;
+  --dv-high-on: #14161A;
+  --dv-mid-on:  #14161A;
+  --dv-low-on:  #F3EEE5;
+
+  --callout-bg:      #1F2634;
+  --callout-rule:    #A8BDEE;
+  --callout-text:    #F3EEE5;
+  --tryit-bg:        #261913;
+  --tryit-border:    #F2865A;
+  --tryit-tab-bg:    #F2865A;
+  --tryit-tab-text:  #14161A;
+  --tryit-writeline: #4E5663;
+  --myth-front-bg:   #3A2F16;
+  --myth-front-key:  #4E5663;
+  --myth-panel-bg:   #1F2634;
+  --myth-panel-text: #A8BDEE;
+  --parentnote-bg:   #1C1F26;
+  --parentnote-text: #F3EEE5;
+  --parentnote-label:#B6AFA4;
+  --answerkey-bg:    #1C1F26;
+  --answerkey-ref:   #A8BDEE;
+  --answerkey-text:  #F3EEE5;
+  --answerkey-open:  #B6AFA4;
+  --badge-bg:        #F6C560;
+  --badge-ring:      #14161A;
+  --badge-text:      #14161A;
+
+  --panel-bg:   #FFFFFF;
+  --panel-ink:  #000000;
+  --panel-rule: #000000;
+
+  --track-parent: #A8BDEE;
+  --track-kid-1:  #F6C560;
+  --track-kid-2:  #5CC6BD;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.55);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.65);
+  --shadow-xl: 0 22px 56px rgba(0, 0, 0, 0.7);
+  --shadow-sticker: 2pt 2pt 0 #000000;
+}
+
+/* ==========================================================================
+   MONO THEME — the grayscale ship artifact (*-GRAYSCALE.pdf)
+   Rendered from the same source with --theme=mono. Values are the measured
+   L* ladder from brand-system.md 3.7, converted to neutral grays, so the
+   grayscale edition is authored, not left to a printer driver.
+   ========================================================================== */
+
+:root[data-theme="mono"] {
+  --c-paper:  #FFFFFF;
+  --c-oat:    #EDEDED;   /* L* 90.9 */
+  --c-stone:  #C0C0C0;   /* L* 75.2 */
+  --c-slate:  #5F5F5F;   /* L* 40.4 */
+  --c-ink:    #1C1C1C;   /* L* 12.4 */
+  --c-white:  #FFFFFF;
+
+  --c-blueberry:    #383838;   /* L* 24.5 */
+  --c-blueberry-16: #E0E0E0;
+  --c-blueberry-08: #F0F0F0;
+  --c-paprika:      #626262;   /* L* 42.0 */
+  --c-paprika-16:   #DEDEDE;
+  --c-paprika-08:   #EFEFEF;
+  --c-sunbutter:    #C6C6C6;   /* L* 77.9 */
+  --c-sunbutter-16: #EBEBEB;
+  --c-sunbutter-08: #F7F7F7;
+  --c-tidepool:     #606060;   /* L* 41.2 */
+  --c-tidepool-16:  #DFDFDF;
+  --c-tidepool-08:  #EFEFEF;
+
+  --color-bg: #FFFFFF;
+  --color-heading: #1C1C1C;
+  --color-accent:  #1C1C1C;
+
+  /* The Amount Ladder is the only data encoding in the product, so it gets
+     the widest gray separation available: 25.9 / 48.2 / 86.1 L*. */
+  --dv-high: #3B3B3B;
+  --dv-mid:  #737373;
+  --dv-low:  #DADADA;
+  --dv-high-on: #FFFFFF;
+  --dv-mid-on:  #FFFFFF;
+  --dv-low-on:  #1C1C1C;
+
+  /* Grayscale collision guard: Paprika (42.0), Tidepool (41.2) and Slate
+     (40.4) are indistinguishable in gray. In mono, the Try-it border and the
+     myth-buster left column carry their keyline weight instead of hue. */
+  --myth-front-key: #1C1C1C;
+  --rule-thin: 1pt;
+
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+}
+
+/* ==========================================================================
+   PRINT — authoritative for anything a customer prints at home.
+   Deliberately more restrictive than screen. This block wins over every
+   theme above, including an explicitly-forced dark theme, because a page
+   sent to a home inkjet must never be a dark page.
+   ========================================================================== */
+
+@media print {
+  :root,
+  :root[data-theme="dark"],
+  :root[data-theme="light"],
+  :root[data-theme="mono"] {
+    color-scheme: light;
+
+    /* --- Ground: the PAPER is the cream. We do not spend the customer's
+       ink laying down #FBF7F0 across 100% of every sheet. --- */
+    --color-bg:        #FFFFFF;
+    --color-bg-raised: #FFFFFF;
+    --color-bg-sunken: #EDE4D6;
+    --c-paper:         #FFFFFF;
+
+    /* --- Restore full light-mode values, so a browser in dark mode still
+       prints the light book. --- */
+    --c-oat:   #EDE4D6;
+    --c-stone: #C3B8A6;
+    --c-slate: #665E55;
+    --c-ink:   #22201D;
+    --c-white: #FFFFFF;
+
+    --c-blueberry:    #23386B;
+    --c-blueberry-16: #DADFEA;
+    --c-blueberry-08: #EDEFF5;
+    --c-paprika:      #AD3F1B;
+    --c-paprika-16:   #F2D5C8;
+    --c-paprika-08:   #F9EAE4;
+    --c-sunbutter:    #F4B63F;
+    --c-sunbutter-16: #FCEBCB;
+    --c-sunbutter-08: #FEF6E6;
+    --c-tidepool:     #1A6C69;
+    --c-tidepool-16:  #CFE3E1;
+    --c-tidepool-08:  #E7F1F0;
+
+    --color-text:         #22201D;
+    --color-text-muted:   #665E55;
+    --color-text-inverse: #FFFFFF;
+    --color-heading:      #23386B;
+    --color-link:         #23386B;
+    --color-border:       #C3B8A6;
+    --color-rule:         #C3B8A6;
+    --color-accent:       #AD3F1B;
+    --color-accent-on:    #FFFFFF;
+    --color-highlight:    #F4B63F;
+    --color-highlight-on: #22201D;
+
+    --dv-high:    #2B3F55;
+    --dv-mid:     #5F7588;
+    --dv-low:     #CDD9E2;
+    --dv-high-on: #FFFFFF;
+    --dv-mid-on:  #FFFFFF;
+    --dv-low-on:  #22201D;
+
+    --callout-bg:      #EDEFF5;
+    --callout-rule:    #23386B;
+    --callout-text:    #22201D;
+    --tryit-bg:        #F9EAE4;
+    --tryit-border:    #AD3F1B;
+    --tryit-tab-bg:    #AD3F1B;
+    --tryit-tab-text:  #FFFFFF;
+    --tryit-writeline: #C3B8A6;
+    --myth-front-bg:   #FCEBCB;
+    --myth-front-key:  #C3B8A6;
+    --myth-panel-bg:   #EDEFF5;
+    --myth-panel-text: #23386B;
+    --parentnote-bg:   #EDE4D6;
+    --parentnote-text: #22201D;
+    --parentnote-label:#665E55;
+    --answerkey-bg:    #EDE4D6;
+    --answerkey-ref:   #23386B;
+    --answerkey-text:  #22201D;
+    --answerkey-open:  #665E55;
+    --badge-bg:        #F4B63F;
+    --badge-ring:      #22201D;
+    --badge-text:      #22201D;
+    --panel-bg:        #FFFFFF;
+    --panel-ink:       #000000;
+    --panel-rule:      #000000;
+
+    --track-parent: #23386B;
+    --track-kid-1:  #F4B63F;
+    --track-kid-2:  #1A6C69;
+
+    /* --- Blurred shadows are the loudest "clipart cheap" tell on paper and
+       render as dirty grey mush on an inkjet. All of them go. --- */
+    --shadow-none: none;
+    --shadow-xs:   none;
+    --shadow-sm:   none;
+    --shadow-md:   none;
+    --shadow-lg:   none;
+    --shadow-xl:   none;
+    --shadow-sticker: 2pt 2pt 0 #22201D;  /* hard offset, zero blur: allowed */
+
+    /* --- Motion is meaningless on paper. --- */
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+
+    /* --- Print type scale takes over from the rem scale. --- */
+    --t-display-xl: var(--pt-display-xl);  --lh-display-xl: var(--pt-lh-display-xl);
+    --t-display-l:  var(--pt-display-l);   --lh-display-l:  var(--pt-lh-display-l);
+    --t-display-m:  var(--pt-display-m);   --lh-display-m:  var(--pt-lh-display-m);
+    --t-h1:         var(--pt-h1);          --lh-h1:         var(--pt-lh-h1);
+    --t-h2:         var(--pt-h2);          --lh-h2:         var(--pt-lh-h2);
+    --t-h3:         var(--pt-h3);          --lh-h3:         var(--pt-lh-h3);
+    --t-h4:         var(--pt-h4);          --lh-h4:         var(--pt-lh-h4);
+    --t-h5:         var(--pt-h5);          --lh-h5:         var(--pt-lh-h5);
+    --t-body-kid1:  var(--pt-body-kid1);   --lh-body-kid1:  var(--pt-lh-body-kid1);
+    --t-body-kid2:  var(--pt-body-kid2);   --lh-body-kid2:  var(--pt-lh-body-kid2);
+    --t-body:       var(--pt-body);        --lh-body:       var(--pt-lh-body);
+    --t-body-lead:  var(--pt-body-lead);   --lh-body-lead:  var(--pt-lh-body-lead);
+    --t-small:      var(--pt-small);       --lh-small:      var(--pt-lh-small);
+    --t-caption:    var(--pt-caption);     --lh-caption:    var(--pt-lh-caption);
+    --t-micro:      var(--pt-micro);       --lh-micro:      var(--pt-lh-micro);
+    --t-panel:      var(--pt-panel);       --lh-panel:      var(--pt-lh-panel);
+
+    /* --- Spacing switches to the 5pt baseline grid. --- */
+    --baseline: var(--baseline-pt);
+    --space-1: var(--space-1-pt);
+    --space-2: var(--space-2-pt);
+    --space-3: var(--space-3-pt);
+    --space-4: var(--space-4-pt);
+    --space-5: var(--space-5-pt);
+    --space-6: var(--space-6-pt);
+    --space-7: var(--space-7-pt);
+    --space-8: var(--space-8-pt);
+    --space-9: var(--space-9-pt);
+
+    --radius-sm: var(--radius-sm-pt);
+    --radius-md: var(--radius-md-pt);
+    --radius-lg: var(--radius-lg-pt);
+
+    /* --- 0.5pt is the thinnest line a consumer inkjet reproduces reliably. --- */
+    --rule-hair: 0.5pt;
+  }
+
+  /* Force backgrounds to actually print. Without this, browsers strip every
+     callout fill and the myth-buster loses its entire structure. */
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Paged media. The Universal Live Block is positioned per trim; nothing
+     inside it moves between Letter and A4. */
+  @page {
+    size: Letter;
+    margin: 54pt 61pt 58pt 72pt;  /* top right bottom left (recto) */
+  }
+  @page :left {
+    margin: 54pt 72pt 58pt 61pt;  /* binding margin swaps on verso */
+  }
+  @page a4 {
+    size: A4;
+    margin: 66pt 45.35pt 95.9pt 70.87pt;
+  }
+  @page a4:left {
+    margin: 66pt 70.87pt 95.9pt 45.35pt;
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+    --ease-out: linear;
+    --ease-in-out: linear;
+  }
+}
+
+/* ==========================================================================
+   FORCED COLORS / HIGH CONTRAST
+   The Amount Ladder must survive a forced-colors environment. It does,
+   because the glyph and the word carry the meaning; the color is redundant.
+   ========================================================================== */
+
+@media (forced-colors: active) {
+  :root {
+    --color-border: CanvasText;
+    --color-rule: CanvasText;
+    --callout-rule: CanvasText;
+    --tryit-border: CanvasText;
+    --shadow-xs: none;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-xl: none;
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBLE EDITION
+   A composite change, not a font swap. Size, leading, tracking, word-spacing
+   and measure are the properties with evidence behind them; the face change
+   is offered because readers ask for it. No clinical claim is made anywhere
+   in this product's copy. Set [data-edition="accessible"] on <html>.
+   ========================================================================== */
+
+:root[data-edition="accessible"] {
+  --font-text: var(--font-a11y);
+  --font-sans: var(--font-a11y);
+  --font-kid:  var(--font-a11y);
+
+  --t-body:      1.25rem;   --lh-body:      1.6;
+  --t-body-kid1: 1.375rem;  --lh-body-kid1: 1.7;
+  --t-body-kid2: 1.25rem;   --lh-body-kid2: 1.65;
+  --t-small:     1.0625rem; --lh-small:     1.6;
+
+  --pt-body:      12.5pt;   --pt-lh-body:      20pt;
+  --pt-body-kid1:   18pt;   --pt-lh-body-kid1: 30pt;
+  --pt-body-kid2:   15pt;   --pt-lh-body-kid2: 25pt;
+  --pt-small:       11pt;   --pt-lh-small:     20pt;
+
+  --track-normal: var(--track-a11y);
+  --measure-body: var(--measure-a11y);
+  --measure-kid1: 40ch;
+  --measure-kid2: 52ch;
+
+  /* Off-white ground reduces glare. Ink on Oat measures 12.90:1. */
+  --color-bg: var(--c-oat);
+}
+
+/* Optional alternate face. Offered on request, with no efficacy claim. */
+:root[data-edition="accessible"][data-font-alt="opendyslexic"] {
+  --font-text: "OpenDyslexic", var(--font-a11y);
+  --font-sans: "OpenDyslexic", var(--font-a11y);
+  --font-kid:  "OpenDyslexic", var(--font-a11y);
+}

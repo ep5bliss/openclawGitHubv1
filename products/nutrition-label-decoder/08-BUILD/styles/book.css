@@ -83,17 +83,23 @@ a { color: var(--c-accent); text-decoration: none; }
   color: var(--c-primary-ink); margin: 0 0 var(--sp-2);
 }
 .box-icon { margin-right: .5em; }
-.box-try-it      { border-left-color: var(--c-accent);    background: var(--c-band-low); }
-.box-try-it .box-title { color: var(--c-band-low-ink); }
-.box-myth        { border-left-color: var(--c-secondary); background: var(--c-band-mid); }
-.box-myth .box-title { color: var(--c-band-mid-ink); }
-.box-parent-note { border-left-color: var(--c-primary);   background: var(--c-surface-3); }
+/* Every box keeps near-black body copy on a light tint. Identity is carried by
+   the rule color and the title, never by reversing type out of a dark fill —
+   that is what fails first on a home printer running low on toner. */
+.box-try-it      { border-left-color: var(--c-box-info-ink);   background: var(--c-box-info); }
+.box-try-it .box-title { color: var(--c-box-info-ink); }
+.box-myth        { border-left-color: var(--c-box-warn-ink);   background: var(--c-box-warn); }
+.box-myth .box-title { color: var(--c-box-warn-ink); }
+.box-parent-note { border-left-color: var(--c-primary);        background: var(--c-surface-2); }
 .box-key-idea    { border-left-color: var(--c-primary); background: var(--c-surface);
                    border: 1.5pt solid var(--c-primary); border-left-width: 4pt; }
-.box-activity    { border-left-color: var(--c-accent); background: var(--c-surface); border: 1pt dashed var(--c-accent); }
-.box-aisle       { border-left-color: var(--c-secondary); background: var(--c-surface-2); }
-.box-heads-up    { border-left-color: var(--c-band-high-ink); background: var(--c-band-high); }
-.box-heads-up .box-title { color: var(--c-band-high-ink); }
+.box-activity    { border-left-color: var(--c-box-action-ink); background: var(--c-surface);
+                   border: 1pt dashed var(--c-box-action-ink); }
+.box-activity .box-title { color: var(--c-box-action-ink); }
+.box-aisle       { border-left-color: var(--c-box-action-ink); background: var(--c-box-action); }
+.box-aisle .box-title { color: var(--c-box-action-ink); }
+.box-heads-up    { border-left-color: var(--c-box-alert-ink);  background: var(--c-box-alert); }
+.box-heads-up .box-title { color: var(--c-box-alert-ink); }
 .box-answer      { border-left-color: var(--c-ink-faint); background: var(--c-surface-2); font-size: var(--fs-small); }
 .box-kid-voice   { border: 0; border-left: 0; background: transparent; padding: 0;
                    font-family: var(--font-kid); font-size: 1.05em; }
@@ -154,11 +160,35 @@ table:not(.nf-panel) tr:nth-child(even) td { background: var(--c-surface-2); }
 .nf-micro th, .nf-micro td { font-size: 8pt; }
 .nf-micro:last-of-type th, .nf-micro:last-of-type td { border-bottom: 0; }
 
-/* Teaching mode: tint the %DV cells by the 5/20 band.
-   Deliberately NOT red/green — these are "how much," not "good/bad." */
+/* Teaching mode: the Amount Ladder applied to the %DV cells.
+   One hue, three lightnesses — amount is encoded as density of ink, not as
+   hue, so it survives color-vision deficiency and grayscale alike. The same
+   color prints for a lot of fiber and a lot of sodium: it reports quantity,
+   never approval. Deliberately NOT red/green.
+
+   The glyph is MANDATORY, not decorative. Color is never the only channel
+   carrying meaning, so a reader who cannot distinguish the tints — or who
+   printed in grayscale on a low-toner cartridge — still reads the amount. */
+.nf-band-low, .nf-band-moderate, .nf-band-high { position: relative; }
 .nf-band-low  { background: var(--c-band-low);  color: var(--c-band-low-ink); }
 .nf-band-moderate { background: var(--c-band-mid); color: var(--c-band-mid-ink); }
 .nf-band-high { background: var(--c-band-high); color: var(--c-band-high-ink); }
+
+.nf-band-low::after, .nf-band-moderate::after, .nf-band-high::after {
+  display: inline-block; margin-left: 4pt; font-size: 5.5pt;
+  letter-spacing: -.5pt; vertical-align: 1pt; line-height: 1;
+}
+.nf-band-low::after      { content: var(--dv-low-glyph); }
+.nf-band-moderate::after { content: var(--dv-mid-glyph); }
+.nf-band-high::after     { content: var(--dv-high-glyph); }
+
+/* Legend for the ladder, for the page where it is first taught. */
+.amount-ladder { display: flex; gap: var(--sp-2); margin: var(--sp-3) 0;
+  font-family: var(--font-ui); font-size: 8pt; font-weight: 700; }
+.amount-ladder span { padding: var(--sp-1) var(--sp-3); border-radius: var(--radius); }
+.amount-ladder .al-low  { background: var(--c-band-low);  color: var(--c-band-low-ink); }
+.amount-ladder .al-mid  { background: var(--c-band-mid);  color: var(--c-band-mid-ink); }
+.amount-ladder .al-high { background: var(--c-band-high); color: var(--c-band-high-ink); }
 
 /* Blank panels for fill-in-the-blank activities. */
 .nf-blank th, .nf-blank td { min-height: 13pt; }

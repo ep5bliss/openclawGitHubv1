@@ -1,0 +1,87 @@
+/* ============================================================
+   BRIDGE — maps the brand system's token vocabulary onto the
+   semantic names book.css consumes.
+
+   WHY THIS FILE EXISTS
+   02-BRAND/tokens.css is the canonical design system and owns its own
+   naming (--c-blueberry, --pt-body, --space-4-pt, --dv-high...).
+   book.css is written against role names (--c-primary, --fs-body, --sp-3...)
+   so the layout stays portable if the brand is ever re-skinned.
+   This file is the only place the two vocabularies meet. If the brand
+   changes, change the right-hand side here and nothing else.
+
+   Loaded AFTER 02-BRAND/tokens.css so it can read brand values.
+   ============================================================ */
+:root {
+  /* ---- Brand colors -> layout roles ---- */
+  --c-primary:      var(--c-blueberry);
+  --c-primary-ink:  var(--c-blueberry);
+  --c-secondary:    var(--c-paprika);
+  --c-accent:       var(--c-tidepool);
+
+  /* Ink ramp. Both soft and faint resolve to Slate: it clears AA on Paper,
+     and Stone (#C3B8A6) does not. Hierarchy is carried by size and weight
+     instead of by a contrast failure. */
+  --c-ink-soft:   var(--c-slate);
+  --c-ink-faint:  var(--c-slate);
+  --c-rule:       var(--c-stone);
+
+  /* ---- Surfaces ---- */
+  --c-surface:    var(--c-paper);          /* page ground */
+  --c-surface-2:  var(--c-oat);            /* raised boxes, cover field */
+  --c-surface-3:  var(--c-sunbutter-08);   /* second-level box fill */
+
+  /* ---- THE AMOUNT LADDER -> %DV teaching bands ----
+     The brand's Amount Ladder is exactly this system, so the bands map
+     straight onto it rather than inventing a parallel scale.
+     One hue, three lightnesses: amount is encoded as density of ink, not
+     as hue, so it survives color-vision deficiency AND grayscale, and the
+     identical color prints for a lot of fiber and a lot of sodium — it
+     reports quantity, never approval. Glyphs are applied in book.css
+     because color must never be the only channel. */
+  --c-band-low:       var(--dv-low);
+  --c-band-low-ink:   var(--dv-low-on);
+  --c-band-mid:       var(--dv-mid);
+  --c-band-mid-ink:   var(--dv-mid-on);
+  --c-band-high:      var(--dv-high);
+  --c-band-high-ink:  var(--dv-high-on);
+
+  /* ---- Type families ----
+     --font-label drives Nutrition Facts panel replicas. Arimo is
+     metric-compatible with Helvetica, which is what FDA specifies, so our
+     reproductions set character-for-character like the real thing. */
+  --font-ui:     var(--font-sans);
+  --font-label:  var(--font-panel);
+
+  /* ---- Type sizes: the print (pt) scale, on the 5pt baseline grid ---- */
+  --fs-body:   var(--pt-body);     /* 10.5pt */
+  --fs-small:  var(--pt-small);    /*  9.5pt */
+  --fs-h1:     var(--pt-h3);       /* 25.5pt — chapter opener */
+  --fs-h2:     var(--pt-h5);       /* 16.5pt — section */
+  --fs-h3:     10pt;               /* tracked uppercase label; no brand slot */
+
+  /* ---- Spacing: the pt ramp, so vertical rhythm stays on-grid in print ---- */
+  --sp-1: var(--space-1-pt);  /*  2.5pt */
+  --sp-2: var(--space-2-pt);  /*    5pt */
+  --sp-3: var(--space-3-pt);  /*   10pt */
+  --sp-4: var(--space-4-pt);  /*   15pt */
+  --sp-5: var(--space-5-pt);  /*   20pt */
+  --sp-6: var(--space-6-pt);  /*   30pt */
+
+  /* ---- Box fills ----
+     These are DELIBERATELY NOT the Amount Ladder. The ladder encodes data in
+     small chips where a dark fill under 8pt of bold reversed type is fine.
+     A teaching box holds body copy, so it takes the brand's 08 tint ramp and
+     keeps near-black text on a near-white ground. Mapping the ladder here
+     produced dark-on-dark body copy that vanished in grayscale. */
+  --c-box-info:        var(--c-blueberry-08);
+  --c-box-info-ink:    var(--c-blueberry);
+  --c-box-warn:        var(--c-sunbutter-08);
+  --c-box-warn-ink:    var(--c-paprika);
+  --c-box-alert:       var(--c-paprika-08);
+  --c-box-alert-ink:   var(--c-paprika);
+  --c-box-action:      var(--c-tidepool-08);
+  --c-box-action-ink:  var(--c-tidepool);
+
+  --radius: var(--radius-md);
+}

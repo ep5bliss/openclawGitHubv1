@@ -37,7 +37,12 @@ const flag = (name) => argv.includes(`--${name}`);
 /** Load the brand tokens if the brand system has landed; otherwise fall back. */
 async function loadTokens() {
   const brandTokens = path.join(PRODUCT, '02-BRAND', 'tokens.css');
-  if (existsSync(brandTokens)) return readFile(brandTokens, 'utf8');
+  // The bridge maps brand token names onto the role names book.css uses, so it
+  // must load AFTER the brand system in order to read its values.
+  const bridge = await readFile(path.join(HERE, 'styles', 'bridge.css'), 'utf8');
+  if (existsSync(brandTokens)) {
+    return `${await readFile(brandTokens, 'utf8')}\n${bridge}`;
+  }
   console.warn('  ! 02-BRAND/tokens.css not found — using fallback tokens.');
   return readFile(path.join(HERE, 'styles', 'tokens.fallback.css'), 'utf8');
 }

@@ -539,7 +539,11 @@ Rationale for the asymmetry: the bottom margin is always larger than the top (op
 
 ### 5.4 Column grid
 
-**12 columns.** Letter: column 33 pt, gutter 9 pt (12 × 33 + 11 × 9 = 495… note the Letter live *width* is the Universal Block's 479 pt, so:)
+**12 columns**, identical on both trims, because both trims share the same Universal Live Block width of 479 pt:
+
+```
+12 × 31.67 pt (columns) + 11 × 9 pt (gutters) = 380.04 + 99 = 479.04 pt
+```
 
 | | Columns | Column width | Gutter |
 |---|---|---|---|
