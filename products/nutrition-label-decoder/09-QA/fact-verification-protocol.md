@@ -71,6 +71,7 @@ Any of these stated wrong is a substantiation problem, not just an accuracy prob
 | Number of major food allergens requiring declaration (incl. sesame) | ☐ | | |
 | Dual-column labeling trigger thresholds | ☐ | | |
 | FDA's exact published wording of the 5%/20% rule of thumb | ☐ | | |
+| "Good source" UPPER bound for fiber — computed 5.3 g (19% of 28 g) vs. 5.5 g in the fact base | ☐ | | |
 | Which four micronutrients are mandatory on the current panel | ☐ | | |
 
 ### 1C. Child-specific guidance
@@ -93,6 +94,27 @@ The monetization research could not open TikTok Seller Center either.
 
 Screenshot these. If you ever get an enforcement action, dated screenshots of the policy
 you read are the difference between an appeal and a dead account.
+
+---
+
+### 1E. Known open deltas
+
+Two things the research flagged as unresolved. Both are in a kids' product, so both matter.
+
+1. **The Dietary Guidelines added-sugar age threshold contradicts itself across sources.**
+   Peer-reviewed and university sources say avoid added sugars *birth through age 10*;
+   an HHS-sourced summary said *age 4 and under*. Both cannot be true.
+   **Standing instruction: no age number is printed anywhere in the product** until
+   someone opens the 2025–2030 Dietary Guidelines document itself and settles it.
+2. **"Good source" upper bound for fiber.** 19% of a 28 g DV computes to 5.3 g; the fact
+   base states 5.5 g. The "high fiber" threshold (5.6 g) is confirmed by both. Resolve the
+   upper bound against 21 CFR 101.54 before printing either figure.
+
+Also worth knowing, and worth a video: **the 2025–2030 Dietary Guidelines did NOT change
+the label.** They moved added sugars to a ≤10 g per-meal framing, but the Added Sugars
+Daily Value is still 50 g and every %DV on every package is still computed from 50 g.
+Changing that requires FDA rulemaking that has not happened. Any copy implying the label
+changed would be false.
 
 ---
 
